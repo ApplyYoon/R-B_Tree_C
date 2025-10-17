@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build-test",
+      "type": "shell",
+      "command": "cd ${workspaceFolder}/rbtree_lab && make clean && make build-test",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "build-visualize",
+      "type": "shell",
+      "command": "cd ${workspaceFolder}/rbtree_lab && make clean && make build-visualize",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}
