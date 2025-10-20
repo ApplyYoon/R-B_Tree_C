@@ -30,53 +30,86 @@ char getColorName(color_t nodeColor) {
   if (nodeColor == 0) return 'R';
   else return 'B';
 }
-int case3(rbtree *t) {
 
+/*
+1. y의 왼쪽 서브 트리를 x의 오른쪽 서브트리로 회전
+2. if y의 왼쪽 서브 트리가 비어 있지 않은 경우 -> x는 서브 트리 루트의 부모가 됨
+3. x의 부모가 y의 부모가 됨
+4. if x가 루트인 경우 -> y가 루트가 됨
+5. else if x가 왼쪽 자식인 경우 -> y는 왼쪽 자식이 됨
+6. else x가 오른쪽 자식인 경우 -> y는 오른쪽 자식이 됨
+7. x를 y의 왼쪽 자식이 되게 함
+8. x의 부모는 y가 됨
+*/
+void turn_left(rbtree *t, node_t *std) {
+  printf("Turn left YEEEEEEEEEEEEEEEEEAH\n");
+  node_t *x = std->parent;
+  node_t *y;
+  node_t *NIL = t->nil;
+
+  y = x->right;
+
+  x->right = y->left;
+  if (y->left != NIL) {
+    y->left->parent = x;
+  }
+
+  y->parent = x->parent;
+  if (x->parent == NIL) { // if root
+    t->root = y;
+  }
+  else if (x == x->parent->left) {
+    x->parent->left = y;
+  }
+  else {
+    x->parent->right = y;
+  }
+  y->left = x;
+  x->parent = y;
+
+  return;
+}
+
+int case3(rbtree *t, node_t *cur) {
+  node_t *NIL = t->nil;
+  node_t *temp;
+  node_t *lost;
   return 0;
 }
 
-int case2(rbtree *t) {
+int case2(rbtree *t, node_t *cur) {
   return 0;
 }
+
+
+
+/*
+case 1-1
+    B
+  R   R
+        N
+
+case 1-2
+    B
+  R   R
+     N 
+
+case 1-3
+    B
+  R   R
+ N
+
+case 1-4
+    B
+  R    R
+   N
+*/
 
 void case1(rbtree *t, node_t *cur, char parentDirect) {
   node_t *NIL = t->nil;
-
-  bool condition = ((cur != NIL && cur->parent != NIL && cur->parent->parent != NIL));
-
-  printf("condition %d\n", condition);
-
-  if (!condition) return;
-  if (parentDirect == 'L' && cur->parent->parent->left == NIL) return;
-  if (parentDirect == 'R' && cur->parent->parent->right == NIL) return;
-
-  // change condition
-  printf("parent: %c\n", parentDirect);
-
-  if (parentDirect == 'R') {
-    condition = (((cur->color == RBTREE_RED) && (cur->parent->color == RBTREE_RED)) && cur->parent->parent->left->color == RBTREE_BLACK);
-  }
-  else if (parentDirect == 'L') {
-    condition = (((cur->color == RBTREE_RED) && (cur->parent->color == RBTREE_RED)) && cur->parent->parent->right->color == RBTREE_BLACK);
-  }
-
-  if (!condition) return;
-
-
-  // for debuging  
   printf("---------------[ INFO ]--------------\n");
   printf("cur -> key: %d, color: %c\n", cur->key, getColorName(cur->color));
   printf("WELCOME TO CASE1\n");
-
-  cur->color = RBTREE_BLACK;
-  cur->parent->color = RBTREE_BLACK;
-
-  if (parentDirect == 'L') {
-    cur->parent->right = RBTREE_RED;
-  }
-  // else {    // if curDirect == 'R'
-  //   cur->parent->left = RBTREE_RED;
-  // }
   return;
 }
 
@@ -102,7 +135,7 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
   printf("[insert] key: %d\n", key);
   
   // printf("NIL: %d\n", NIL->key);
-
+  
   // root
   if (t->root == NIL) {
     t->root = p;
@@ -132,12 +165,17 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
     
           printf("[insert](new) key: %d \n", cur->right->key);
 
-
           // move to new node
           cur = cur->left;
 
-          // case 1
-          case1(t, cur, parentDiret);
+          printf("When the cur's value is %d, gonna the case3\n", cur->key);
+          // case3(t, cur->parent);
+
+          // printf("When the cur is %d, gonna the case1\n", cur->key);
+      
+          
+          // case1(t, cur, parentDiret);
+          
 
           return cur; 
         }
@@ -159,10 +197,11 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
 
           // move to new node
           cur = cur->right;
-          
-
-          // case 1
-          case1(t, cur, parentDiret);
+        
+          // printf("When the cur's value is %d, gonna the case3\n", cur->key);
+          // case3(t, cur->parent);
+          turn_left(t, cur);
+          // case1(t, cur, parentDiret);
           
           
           return cur;
